@@ -1,4 +1,4 @@
-import { start } from "https://deno.land/x/denops_std@v0.3/mod.ts";
+import { start } from "https://deno.land/x/denops_std@v0.4/mod.ts";
 import {
   GraphQLClient,
   GraphQLRequest,
@@ -52,13 +52,19 @@ async function getUserStatus(): Promise<void> {
   console.log(`[CodingNow] Current setting: ${result.status.message}`);
 }
 
-async function changeUserStatus(filetype: unknown): Promise<void> {
-  if (typeof filetype != "string") {
-    console.log("[CodingNow] Type Error");
+async function changeUserStatus(...args: unknown[]): Promise<void> {
+  let messageContent = "";
+  if (Array.isArray(args)) {
+    messageContent = args.join("");
+  } else if (typeof args === "string") {
+    messageContent = args;
+  }
+  if (messageContent === "") {
+    console.log("[CodingNow] Message is empty");
     return;
   }
 
-  const message = `{message: "I'm coding ${filetype}"}`;
+  const message = `{message: "${messageContent}"}`;
   // mutation MyMutation {
   //   __typename
   //   changeUserStatus(input: {message: "bbb"}) {
@@ -107,6 +113,15 @@ start(async (vim) => {
   }
   githubToken = e;
 
+  const messageContent = await vim.g.get(
+    "coding_now_message",
+    '["I\'m coding ", &filetype]',
+  );
+  if (messageContent === null) {
+    console.log("[CodingNow] Cannot get g:coding_now_message");
+    return;
+  }
+
   vim.register({
     getUserStatus,
     changeUserStatus,
@@ -116,7 +131,7 @@ start(async (vim) => {
     command! CodingNowRead call denops#request("${vim.name}", "getUserStatus", [])
     `);
   await vim.execute(`
-    command! CodingNowWrite call denops#request("${vim.name}", "changeUserStatus", [&filetype])
+    command! CodingNowWrite call denops#request("${vim.name}", "changeUserStatus", ${messageContent})
     `);
 
   await vim.execute(`
