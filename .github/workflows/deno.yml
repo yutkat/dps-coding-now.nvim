@@ -24,7 +24,7 @@ jobs:
           deno-version: v1.x
       - name: Format
         run: |
-          deno fmt --check
+          deno fmt --check --ignore=".vim/coc-settings.json"
 
   # test:
   #   runs-on: ubuntu-20.04
