@@ -126,6 +126,9 @@ start(async (vim) => {
     getUserStatus,
     changeUserStatus,
   });
+  await vim.execute(
+    `call denops#notify("${vim.name}", "changeUserStatus", ${messageContent})`,
+  );
 
   await vim.execute(`
     command! CodingNowRead call denops#request("${vim.name}", "getUserStatus", [])
