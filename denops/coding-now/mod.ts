@@ -1,4 +1,4 @@
-import { start } from "https://deno.land/x/denops_std@v0.7/mod.ts";
+import { main } from "https://deno.land/x/denops_std@v0.8/mod.ts";
 import {
   GraphQLClient,
   GraphQLRequest,
@@ -101,7 +101,7 @@ async function changeUserStatus(...args: unknown[]): Promise<void> {
   );
 }
 
-start(async (vim) => {
+main(async ({ vim }) => {
   const e = Deno.env.get("CODING_NOW_GITHUB_TOKEN");
   if (typeof e === "undefined") {
     console.log("[CodingNow] No CODING_NOW_GITHUB_TOKEN env variable found");
